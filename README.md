@@ -1,113 +1,186 @@
-# Welcome to PyLucas
+﻿
 
----
+# PyLucas
+
+一个轻量的 Python 实用工具集，提供结果封装、时间/列表辅助、彩色与 ASCII 输出、配置读写、文件操作、日志管理、下载与 GitHub Releases 查询、简易发布打包等常用能力。
+
+## 特性
+
+- 统一 `Result` 结果封装与异常获取
+- 时间戳、索引、依赖检测等基础函数
+- 彩色输出与 ASCII 艺术字打印
+- Excel 读取与基础清洗（基于 pandas）
+- 配置文件编辑（TOML/JSON）
+- 文件列表、复制与清理工具
+- 日志管理与自动日志文件轮转
+- HTTP 下载器与 GitHub Releases 查询
+- 发布包打包工具（支持 repignore）
 
 ## 安装
 
-```
+```bash
 pip install pylucas
-pip install pylucas[all]
-pip install pylucas[fileops, log, rwxl]
 ```
 
+本项目要求 Python $\ge 3.12$。
+
+依赖（已在包中声明）：`所有依赖均不强制要求, 使用对应功能前请确保依赖已安装`
+
+- tomli-w (配置文件读写)
+- art（ASCII 字体制）
+- pandas（Excel 读取）
+- pathspec（发布包忽略规则）
+
+## 快速开始
+
+```python
+from pylucas.basic import Result
+from pylucas.basic.func import time_stamp, dependency_check
+
+result = Result(True, {"a": 1}, "ok")
+print(bool(result))
+print(result())
+print(result.Exception)
+
+print(time_stamp())
+print(dependency_check("pip", mode="str"))
 ```
-poetry add pylucas
-poetry add pylucas[all]
-poetry add pylucas[fileops, log, rwxl]
+
+## 模块一览与示例
+
+### basic
+
+**Result 结果封装**
+
+```python
+from pylucas.basic import Result
+
+res = Result(True, 123, "ok")
+if res:
+	print(res())
+else:
+	raise res.Exception
 ```
 
----
+**基础函数**
 
-## 支持的功能列表:
+```python
+from pylucas.basic.func import time_stamp, lindex, rindex, dependency_check
 
-- fileops
-  - ConfigEditor
-    - 用于 创建/读写 配置文件
-    - 支持格式: Toml, Json
-  - ListFiles
-    - 返回指定路径下的所有满足条件的文件.
-  - FilesCopyer
-    - 拷贝文件或目录下的所有文件到指定目录下.
-  - FilesClear
-    - 清除指定文件或指定目录下的所有文件.
-- log
-  - LogManager
-    - 用于进行日志管理.
-  - ASCII_Art
-    - 用于输出 ASCII 艺术字.
-- rwxl
-  - ReadExcel
-    - 用于读取 Excel 文件并按一定规则进行基础的数据清洗.
-- struct
-  - result
-    - 用于作为通用的函数返回值的类型.
-- function
-  - GetTimeStamp
-    - 用于获取当前时间戳.
-  - GetCurrentFrameInfo
-    - 获取当前帧信息, 可以定位到当前执行到的调用栈.
-  - lindex
-    - 用于从左侧查找值索引, 类似 str.find, 如未找到则返回 -1.
-  - rindex
-    - 用于从右侧查找值索引, 类似 str.rfind, 如未找到则返回 -1.
+print(time_stamp())
+print(lindex(["a", "b", "c"], "b"))
+print(rindex(["a", "b", "c", "b"], "b"))
+print(dependency_check("pip", mode="dict"))
+```
 
----
+### better_print
 
-## 计划列表:
+**彩色输出**
 
-### ~~1.2.0:~~
+```python
+from pylucas.better_print import CPrint
 
-- **_出现了大量的因向前兼容而产生的被标记为'即将弃用'的函数与方法, 并且经历大范围的重构, ThreadPool 类因性能原因没有被添加, 此版本被跳过, 直接并入包含破坏性更新的 2.0.0 版本._**
+CPrint.info("info")
+CPrint.warn("warn")
+CPrint.error("error")
+CPrint.success("success")
+CPrint("custom", color="#00FFAA", reset=True)
+```
 
-- [ ] ~~添加 ThreadPool 类, 用于线程池创建和子线程管理.~~
-- [x] ~~更改 Function 文件夹结构, 使更易于管理.~~
+**ASCII 艺术字（需安装 art）**
 
-### 2.0.0:
+```python
+from pylucas.better_print import APrint
 
-- **_该版本是实际意义上的第一个正式版, 尽可能的将所有接口固定下来, 以防止因为后续的修复和优化等操作导致的无法向前兼容._**
+APrint.tittle("Hello", split_line="#")
+```
 
-- [x] 修复各种 BUG.
-- [x] 理顺项目结构.
-- [x] 部分重构和优化.W
-- [x] 移除部分功能(被弃用的或是被重构为新方法/函数的).
+### cute_panda
 
-### **3.0.0:**
+**Excel 读取与基础清洗**
 
-- **_该版本大幅度的修改了整个项目结构, 引入了子包和可选依赖._**
-- **fileops.ConfigEditor:**
+```python
+from pylucas.cute_panda import read_excel
 
-  - [x] 移除基类 ConfigEditorSL, 在 ConfigEditor 中直接调用 ConfigEditorSL_Json, ConfigEditorSL_Toml 的方法.
-  - [x] 为 ConfigEditor 添加魔术方法 \_\_getitem\_\_, \_\_setitem\_\_ 允许使用 [] 运算符进行键索引.
-  - [x] 未修改已存在的对外接口.
+df = read_excel(
+	io="./demo.xlsx",
+	sheet_name=0,
+	key_tags=["姓名", ["学号", "编号"]],
+	search_range=15,
+)
+print(df.head())
+```
 
-- **fileops.Function:**
+### file (计划重构)
 
-  - [x] 将原有 Function 中的部分涉及文件操作的函数移至此处, 包含 ListFiles, FilesCopyer, FilesClear.
+**配置文件编辑（TOML/JSON）**
 
-- **function.Function:**
+```python
+from pylucas.file import ConfigEditor
 
-  - [x] 包含 GetTimeStamp, GetCurrentFrameInfo, lindex, rindex.
+cfg = ConfigEditor(File="./config.toml", Data={"a": {"b": 1}})
+cfg.SetValue("a.c", 2)
+print(cfg.GetValue("a.c", ResultType="Self"))
+```
 
-- **log.LogManager:**
+**文件列表、复制与清理**
 
-  - [x] 为 LogManager 添加魔术方法 \_\_call\_\_, 允许使用 () 关键字直接调用 Log 方法.
+```python
+from pylucas.file import ListFiles, FilesCopyer, FilesClear
 
-- **log.Function:**
+files = ListFiles("./data", Types=("*.txt",), Includes="log", Mode="Path")
+FilesCopyer("./src", "./dst", Mode="Tree")
+FilesClear(*files, Mode="File")
+```
 
-  - [x] 把原本在 Function 内的 ASCII_Art 函数移动到此处.
+### loger
 
-- **rwxl.Function:**
+**日志管理**
 
-  - [x] 添加函数 ReadExcel.
+```python
+from pylucas.loger import LogManager
 
-- **struct.Struct:**
+logger = LogManager(title="MyApp", dir_log="./log", limit_log_files=5)
+logger("hello", level="info")
+logger.log("warn message", level="warn", module="demo")
+```
 
-  - [x] 移动类 result 至此.
+### net
 
-### 未来:
+**文件下载**
 
-- [ ] 增加类 zDownloader, 实现多线程下载器.(实现中)
-- [ ] ~~增加类 zThreadPool, 实现线程池.(计划中)~~
-- [ ] ~~增加类 zEventHandler, 实现事件处理系统.(计划中)~~
-- [ ] ~~增加类 KbdCapturer, 实现键盘捕获.(计划中)~~
-- [ ] 增加类 rpa, 实现自动化.(实现中)
+```python
+from pylucas.net import download_file
+
+result = download_file("https://example.com/file.zip", show_process=True)
+print(result)
+```
+
+**GitHub Releases 查询**
+
+```python
+from pylucas.net import GitHub
+
+res = GitHub.get_releases(owner="octocat", repo="Hello-World", latest=True)
+if res:
+	release = res.data
+	asset = next(release.search().with_tag(".*", ".*"), None)
+	print(asset)
+```
+
+### tool
+
+**发布包打包**
+
+```python
+from pylucas.tool.release_packer import ReleasePacker
+
+ReleasePacker(root=".").build()
+```
+
+支持 repignore 规则文件，格式与 .gitignore 相同（基于 pathspec）。
+
+## 版本与许可证
+
+- 当前版本：4.0.0
+- 许可证：见 [LICENSE](LICENSE)

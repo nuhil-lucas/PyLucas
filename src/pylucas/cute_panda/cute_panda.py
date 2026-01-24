@@ -1,7 +1,9 @@
-def ReadExcel(io: str,
-              sheet_name: int = 0,
-              KeyTags: list = [],
-              SearchRange: int = 15):
+def read_excel(
+    io: str,
+    sheet_name: int = 0,
+    key_tags: list = [],
+    search_range: int = 15
+):
     """_用于简化读取Excel文件并进行基础清洗的过程._
 
     Args:
@@ -18,21 +20,21 @@ def ReadExcel(io: str,
     """
     from pandas import DataFrame, read_excel
     from numpy import nan
-    Sheet: DataFrame = read_excel(io=io,
+    sheet: DataFrame = read_excel(io=io,
                                   sheet_name=sheet_name,
                                   header=None,
                                   dtype=str).fillna('')
-    Sheet = Sheet.replace(['', ' '], nan).dropna(how='all').fillna('')
-    SearchRange = Sheet.shape[0] if SearchRange == -1 else SearchRange
-    KeyTags = [KeyTag if isinstance(KeyTag, list) else [KeyTag] for KeyTag in KeyTags]
-    for Index_Row, Row in Sheet.iterrows():
-        ColTags = Row.tolist()
-        IsTittle: bool = all([any([Tag in ColTags for Tag in KeyTag]) for KeyTag in KeyTags])
-        if Index_Row > SearchRange:
-            raise Exception(f"在预设的范围内[header < {Index_Row}]无法匹配到标题行.")
-        elif IsTittle or not KeyTags:
-            Sheet = Sheet.iloc[Index_Row+1:].reset_index(drop=True)
-            Sheet.columns = [Tag.strip() if Tag else f'Unnamed: {Index}' for Index, Tag in enumerate(ColTags)]
-            return Sheet
+    sheet = sheet.replace(['', ' '], nan).dropna(how='all').fillna('')
+    search_range = sheet.shape[0] if search_range == -1 else search_range
+    key_tags = [key_tag if isinstance(key_tag, list) else [key_tag] for key_tag in key_tags]
+    for row_idx, row in sheet.iterrows():
+        col_tags = row.tolist()
+        is_title: bool = all([any([col_tag in col_tags for col_tag in key_tag]) for key_tag in key_tags])
+        if row_idx > search_range:
+            raise Exception(f"在预设的范围内[header < {row_idx}]无法匹配到标题行.")
+        elif is_title or not key_tags:
+            sheet = sheet.iloc[row_idx+1:].reset_index(drop=True)
+            sheet.columns = [col_tag.strip() if col_tag else f'Unnamed: {col_idx}' for col_idx, col_tag in enumerate(col_tags)]
+            return sheet
     else:
         raise Exception(f"在数据表内无法匹配到标题行.")

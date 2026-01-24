@@ -93,3 +93,58 @@ Version:
         
         添加可选依赖:
             将所有依赖项修改为可选, 根据不同的子包在 pyproject 内添加可选依赖项.
+    4.0.0
+        变更结构:
+            src
+            └─pylucas
+                ├─basic
+                ├─better_print
+                ├─cute_panda
+                ├─file
+                ├─loger
+                ├─net
+                └─tool
+
+        新增/调整功能:
+            basic.result:
+                1. Result 支持布尔判断与可调用取值, repr 输出 data 与 addition.
+                2. ResultError 用于快速抛出结果异常.
+            basic.func:
+                1. time_stamp 支持自定义格式与分隔符.
+                2. lindex/rindex 未命中返回 -1.
+                3. dependency_check 提供 bool/str/dict/Result/Exception 多种返回模式.
+                4. terminal_clear 支持 Windows 与类 Unix 终端清屏.
+            better_print:
+                1. CPrint 新增 info/warn/error/success/failure 快捷彩色输出.
+                2. CPrint 支持 hex 颜色字符串与自定义输出流.
+                3. APrint 支持 ASCII 艺术字与分隔线, art 未安装时给出提示.
+            cute_panda:
+                1. ReadExcel 支持标题行自动探测与 KeyTags 约束.
+                2. 自动清理空行与空列, 返回已清洗 DataFrame.
+            file:
+                1. ConfigEditor 支持 TOML/JSON 读写与临时内存态.
+                2. ConfigEditor 支持点路径读写与嵌套键遍历.
+                3. ListFiles 支持类型与包含关键字过滤.
+                4. FilesCopyer 支持重名自动编号, 兼容 Tree/File 模式.
+                5. FilesClear 支持批量清理文件或目录.
+            loger:
+                1. LogManager 支持 __call__ 直接写日志.
+                2. 支持日志文件上限控制与自动清理旧日志.
+                3. 记录调用链与模块来源.
+            net:
+                1. download_file 支持显示进度与断点信息统计.
+                2. SSL 证书失败时自动尝试下载 cacert 继续下载.
+                3. GitHubReleases 支持按 tag 与 asset 名过滤.
+            tool:
+                1. ReleasePacker 支持 repignore 过滤并打包 zip.
+                2. 自动读取 pyproject 元数据生成包名与版本号.
+
+        移除/弃用:
+            1. 移除旧版目录结构 fileops/function/log/rwxl/struct, 统一归并到 basic/file/loger/net 等新包名.
+            2. 移除未实现的占位模块 _NetWork、_RPA.
+            3. 移除旧版可选依赖分组配置, 统一在 pyproject.toml 中声明核心依赖.
+            4. 旧版 API 路径（如 pylucas.function、pylucas.fileops 等）不再保留兼容入口.
+
+        其他:
+            1. 更新依赖配置并统一在 pyproject.toml 声明.
+            2. 新增测试用例覆盖 Result、ConfigEditor、文件工具、日志与网络模块.
