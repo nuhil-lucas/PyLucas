@@ -1,2 +1,3 @@
-from pylucas.file.func.func import ListFiles, FilesCopyer, FilesClear
-from pylucas.file.ConfigEditor import ConfigEditor
+from .func.func import ListFiles, FilesCopyer, FilesClear
+from .config_editor import ConfigEditor
+# from .zip_file import ZipFile
