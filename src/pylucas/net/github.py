@@ -20,9 +20,6 @@ from typing import (
 from pylucas.basic import Result
 
 class GitHubReleases():
-    def __init__(self, data: dict):
-        self.data: dict = data
-        self._search_ = self.Search(self.data)
 
     class Search():
         def __init__(self, data: dict):
@@ -36,7 +33,6 @@ class GitHubReleases():
                 for asset in release["assets"]:
                     if not "name" in asset: continue
                     if re_search(assets, asset["name"]) is None: continue
-                    
                     result: dict = {
                         "name": release["name"],
                         "file": asset["name"],
@@ -45,8 +41,23 @@ class GitHubReleases():
                     }
                     yield result
 
-    def search(self):
-        return self._search_
+    def __init__(self, data: dict):
+        self.data: dict = data
+        self.search = self.Search(self.data)
+
+    def last(self, assets: str = ".*") -> Generator[dict, None, None]:
+        for release in self.data:
+            for asset in release["assets"]:
+                if not "name" in asset: continue
+                if re_search(assets, asset["name"]) is None: continue
+                result: dict = {
+                    "name": release["name"],
+                    "file": asset["name"],
+                    "url": asset["browser_download_url"],
+                    "digest": asset["digest"]
+                }
+                yield result
+            break
 
 class GitHub():
     @classmethod
@@ -65,21 +76,38 @@ class GitHub():
 
 if __name__ == "__main__":
     from sys import exit
-    import json
-    
-    gr: Result[bool, GitHubReleases] = GitHub.get_releases(owner = "mosheng1", repo = "QuickClipboard", latest=False)
-
-    if gr:
-        gr: GitHubReleases = gr.data
-    else:
-        with open("test.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-        gr: GitHubReleases = GitHubReleases(data)
-
-    matched_gr: dict = next(gr.search().with_tag("QuickClipboard.*", ".*_x64-setup.exe"), None)
-
-    if matched_gr is None: exit("No matched release asset found.")
-
     from pylucas.net import download_file
+    from pylucas.basic.func import terminal_clear
+    from json import loads as json_loads, dumps as json_dumps
 
-    download_file(matched_gr["url"], file_name=matched_gr["file"])
+    terminal_clear()
+    
+    get_online: bool = False
+
+    release: GitHubReleases = None
+
+    if get_online:
+        result: Result[bool, GitHubReleases] = GitHub.get_releases(owner = "mosheng1", repo = "QuickClipboard", latest=False)
+
+        if not result:
+            exit(f"Error: {result.data}")
+
+        release = result()
+
+        with open("./tests/github_quickclipboard_releases.json", "w", encoding="utf-8") as file:
+            file.write(json_dumps(release.data, indent=4))
+    else:
+        with open("./tests/github_quickclipboard_releases.json", "r", encoding="utf-8") as file:
+            release_data: dict = json_loads(file.read())
+        release = GitHubReleases(release_data)
+
+    for matched_release in release.search.with_tag("QuickClipboard v0.2.0-beta.4.*", "x64"):
+        print(matched_release)
+    
+    print("-----")
+
+    for matched_release in release.last_release(assets=r".*x64.*\.exe$"):
+        print(matched_release)
+
+
+    if matched_release is None: exit("No matched release asset found.")
