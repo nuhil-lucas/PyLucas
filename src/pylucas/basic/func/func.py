@@ -1,6 +1,9 @@
+# Standard
 from typing import Literal
-from pylucas.basic.result import Result
 from time import localtime, strftime
+# Internal
+from pylucas.basic.result import Result
+# External
 
 def time_stamp(
     rule: str = "%Y{split}%m{split}%d %H{split}%M{split}%S", 
@@ -69,10 +72,19 @@ def rindex(List: list, Value: any) -> int:
     return Index
 
 def dependency_check(
-        module_name: str,
-        version: str = None, # 未实现
+        module: str,
         mode: Literal["bool", "str", "dict", "Result", "Exception"] = "str"
     ) -> bool | str | Result:
+    """
+    dependency_check 的 Docstring
+    
+    :param module: Not Support The Format Like \"Module Name (Module Version)\"; Use Module Name Or Pkg Name Only Pls.
+    :type module: str
+    :param mode: Use To Control The Result Type.
+    :type mode: Literal["bool", "str", "dict", "Result", "Exception"]
+    :return: ...
+    :rtype: bool | str | Result
+    """
     from importlib.metadata import metadata, PackageNotFoundError
 
     module_found: bool = False # Distribution Package
@@ -80,16 +92,16 @@ def dependency_check(
     msg: str = ""
 
     try:
-        meta_data: dict = dict(metadata(module_name))
+        meta_data: dict = dict(metadata(module))
     except PackageNotFoundError:
-        msg = f"Package '{module_name}' Not Found"
+        msg = f"Package '{module}' Not Found"
     except Exception as E:
-        msg = f"Package '{module_name}' Not Found"
+        msg = f"Package '{module}' Not Found;" + f" {str(E)}"
     else:
-        msg = f"Package '{module_name}' Found"
+        msg = f"Package '{module}' Found"
         module_found = True
 
-    meta_data = meta_data | {"Msg": msg} if module_found else {"Name": module_name, "Msg": msg}
+    meta_data = meta_data | {"Msg": msg} if module_found else {"Name": module, "Msg": msg}
 
     match mode:
         case "bool":
@@ -111,5 +123,5 @@ def terminal_clear():
 if __name__ == "__main__":
     terminal_clear()
     print(dependency_check("tomli_w"))
+    print(dependency_check("tomli-w"))
     print(dependency_check("time"))
-

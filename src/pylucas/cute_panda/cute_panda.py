@@ -1,3 +1,15 @@
+# Standard
+# Internal
+from pylucas.basic.func import dependency_check
+dependency_check("pandas", "Exception")
+dependency_check("numpu", "Exception")
+# External
+from pandas import (
+    DataFrame,
+    read_excel as pd_read_excel
+)
+from numpy import nan
+
 def read_excel(
     io: str,
     sheet_name: int = 0,
@@ -18,9 +30,7 @@ def read_excel(
     Returns:
         DataFrame: _完成读取与基础清晰的 DataFrame 实例._
     """
-    from pandas import DataFrame, read_excel
-    from numpy import nan
-    sheet: DataFrame = read_excel(io=io,
+    sheet: DataFrame = pd_read_excel(io=io,
                                   sheet_name=sheet_name,
                                   header=None,
                                   dtype=str).fillna('')

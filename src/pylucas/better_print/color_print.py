@@ -1,3 +1,7 @@
+# Standard
+# Internal
+# External
+
 class CPrint():
     BLUE: str = "\033[38;2;0;0;255m"
     ORANGE: str = "\033[38;2;255;165;0m"
@@ -71,7 +75,6 @@ class CPrint():
     @classmethod
     def reset(cls):
         print(cls.RESET, end="")
-
 
 if __name__ == "__main__":
     from sys import stderr

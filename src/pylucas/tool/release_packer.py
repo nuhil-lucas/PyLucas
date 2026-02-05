@@ -1,5 +1,6 @@
 # https://git-scm.com/docs/gitignore
 
+# Standard
 from os.path import (
     exists as path_exists,
     isdir as path_isdir,
@@ -23,7 +24,10 @@ from zipfile import (
 from tomllib import (
     load as toml_load
 )
-
+# Internal
+from pylucas.basic.func import dependency_check
+dependency_check("pathspec", "Exception")
+# External
 from pathspec import GitIgnoreSpec
 
 class ReleasePacker():

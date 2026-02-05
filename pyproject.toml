@@ -21,8 +21,9 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 
 [dependency-groups]
 dev = [
-    "tomli-w (>=1.2.0,<2.0.0)",
     "art (>=6.5,<7.0)",
     "pandas (>=3.0.0,<4.0.0)",
-    "pathspec (>=1.0.3,<2.0.0)"
+    "pathspec (>=1.0.3,<2.0.0)",
+    "pyautogui (>=0.9.54,<0.10.0)",
+    "tomli-w (>=1.2.0,<2.0.0)",
 ]

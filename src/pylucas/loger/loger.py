@@ -1,3 +1,4 @@
+# Standard
 from os import (
     makedirs as os_makedirs,
     listdir as os_listdir,
@@ -15,11 +16,12 @@ from atexit import register as atexit_register
 from io import TextIOWrapper
 from typing import Literal
 from types import FrameType
-
+# Internal
 from pylucas.basic.func import (
     time_stamp as get_time_stamp,
 )
 from pylucas.better_print import APrint
+# External
 
 LEVELS = Literal["info", "warn", "error"]
 

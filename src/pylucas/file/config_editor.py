@@ -1,7 +1,12 @@
-import json, tomllib, tomli_w
+# Standard
+import json, tomllib
 from typing import Literal, Self, Any
 from copy import deepcopy
 from os.path import exists, normpath
+# Internal
+from pylucas.basic.func import dependency_check
+from pylucas.better_print import CPrint
+# External
 
 class ConfigEditorSL_Toml():
     def Load(self, File: str) -> dict:
@@ -218,3 +223,11 @@ class ConfigEditor():
         DepthRecursion(KeyLocate)
         return NestedPaths
 
+if dependency_check("tomli-w", "bool"):
+    import tomli_w
+else:
+    CPrint.warn("Toml File Request Module \"tomli_w\", You Have Not Installed Yet, Automatically Switch To Json Mode.")
+    ConfigEditorSL_Toml = ConfigEditorSL_Json
+
+if __name__ == "__main__":
+    ConfigEditorSL_Toml().Load("/ChangeLog.log")

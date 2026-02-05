@@ -1,3 +1,4 @@
+# Standard
 import ssl
 from ssl import SSLCertVerificationError
 from urllib.request import (
@@ -23,7 +24,9 @@ from asyncio import (
     run as asio_run,
     gather as asio_gather
 )
+# Internal
 from pylucas.basic import Result
+# External
 
 class ResponseFile():
     def __init__(self, response: HTTPResponse, file_name: str = None, chunk_size: int = 65536, show_process: bool = True):

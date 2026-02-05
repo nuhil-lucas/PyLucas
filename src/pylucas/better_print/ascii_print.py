@@ -1,8 +1,11 @@
+# Standard
 from typing import Any, Literal, TypeAlias
+# Internal
 from pylucas.basic.func import dependency_check
 from pylucas.basic import Result
+# External
 
-MODULE_ART: bool = dependency_check(module_name="art", mode="bool")
+MODULE_ART: bool = dependency_check("art", "bool")
 FONT_TYPES: TypeAlias = Literal["univers", "tarty8", "tarty7", "tarty1", "block", "starwars"]
 FONT_NAMES: list[str] = []
 

@@ -1,3 +1,4 @@
+# Standard
 from urllib.request import (
     Request,
     urlopen
@@ -17,7 +18,9 @@ from re import (
 from typing import (
     Generator
 )
+# Internal
 from pylucas.basic import Result
+# External
 
 class GitHubReleases():
 
