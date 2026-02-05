@@ -3,7 +3,7 @@
 Backup
 dist/
 Log/*.log
-tests/
+tests/*
 *.egg-info/
 
 .pypirc
@@ -11,3 +11,5 @@ tests/
 __pycache__/
 
 poetry.lock
+
+!tests/CreateTests.py
